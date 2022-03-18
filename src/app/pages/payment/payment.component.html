@@ -1,0 +1,162 @@
+<mat-card>
+    <mat-card-content>
+        <mat-card-title>               
+            <span> 
+                {{translate(labels.entityNamePayment)}}
+                <div class="floatright">
+                
+                    <button mat-icon-button onclick="openSearchOverlay()" (click)="openSearch()"
+                        [matTooltip]="translate(labels.btnSearch) + ' ' +translate(labels.entityNamePayment)">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+
+                    </button>
+                    <button  mat-icon-button onclick="openAddOverlay()"(click)="openSAdd()"
+                        [matTooltip]="translate(labels.btnAdd) + ' ' +translate(labels.entityNamePayment)">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </span>
+         
+        </mat-card-title>
+        <div id="add-overlay" class="overlaydiv m-t-5">
+
+            <div class="overlay-content">
+                <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+
+            <div fxLayout="row wrap">
+                <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                    <mat-form-field>
+                        <mat-label>{{translate(labels.saleColumnBuyerName)}}
+                        </mat-label>
+                        <mat-select formControlName="buyer"
+                            [errorStateMatcher]="matcher" class="angSelect">
+                            <mat-option *ngFor="let buyer of buyerList"
+                                [value]="buyer._id">
+                                {{buyer?.name}} </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-hint *ngIf="required('buyer')" class="text-danger font-14">
+                        {{translate(labels.validation_required)}}</mat-hint>
+                    </div>
+            
+                <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                    <mat-form-field>
+                        <input matInput [placeholder]="translate(labels.paymentColumnAmount)" type="number"
+                            [errorStateMatcher]="matcher" formControlName="amount">
+                    </mat-form-field>
+                    <mat-hint *ngIf="required('amount')" class="text-danger font-14">
+                        {{translate(labels.validation_required)}}</mat-hint>
+                </div>
+            </div>
+            <mat-card-actions class="m-l-5">
+                <button mat-raised-button  type="submit" class='m-l-2'[disabled]="!paymentForm.valid">{{addUpdateTitle()}}</button>
+                <button mat-raised-button color="primary" type="button"  [disabled]="!this.paymentForm.touched && this.updatePaymentId == null"(click)="onClearAdd()">{{translate(labels.btnClear)}}</button>
+                <button mat-raised-button color="accent" type="button" onclick="closeAddOverlay()" (click)="onClearAdd()">{{translate(labels.btnCancel)}}</button>
+
+            </mat-card-actions>
+         
+        </form>
+    
+    </div>
+    </div>
+    <div id="search-overlay" class="overlaydiv m-t-5">
+        <div class="overlay-content">
+        <form [formGroup]="paymentSearch" (ngSubmit)="onSearch()">
+         
+            <div fxLayout="row wrap">
+                <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                    <mat-form-field>
+                        <mat-label>{{translate(labels.saleColumnBuyerName)}}
+                        </mat-label>
+                        <mat-select formControlName="buyer"
+                            [errorStateMatcher]="matcher" class="angSelect">
+                            <mat-option *ngFor="let buyer of buyerList"
+                                [value]="buyer._id">
+                                {{buyer?.name}} </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    </div>
+            
+                <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                    <mat-form-field>
+                        <input matInput [placeholder]="translate(labels.paymentColumnAmount)" type="number"
+                            [errorStateMatcher]="matcher" formControlName="amount">
+                    </mat-form-field>
+                </div>
+                <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                    <label class="m-r-20">{{translate(labels.history)}} :</label>
+                    <mat-radio-group formControlName="history" (change)="onValChange()">
+                      <mat-radio-button value="true" class="m-r-10">Yes</mat-radio-button>
+                      <mat-radio-button value="false" [checked]="true">No</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+            </div>
+            <mat-card-actions>
+                <button mat-raised-button  type="submit"class='m-l-2' [disabled]="!this.paymentSearch.touched"onclick="closeSearchOverlay()">{{translate(labels.btnSearch)}}</button>
+                <button mat-raised-button color="primary" type="button"  [disabled]="!this.paymentSearch.touched"(click)="onClearSearch()">{{translate(labels.btnClear)}}</button>
+                <button mat-raised-button color="accent" type="button" onclick="closeSearchOverlay()"(click)="onClearSearch()">{{translate(labels.btnCancel)}}</button>
+
+            </mat-card-actions>
+         
+        </form>
+    </div>
+    
+    </div>
+    <!-- <div class="bg-light p-10 p-r-20 p-l-20 m-t-3">
+        <mat-form-field>
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+    </div> -->
+    <div class="responsive-table ">
+        <mat-table [dataSource]="paymentList" matSort  class="angTable" >
+
+           
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="buyer">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnBuyerName)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row?.buyer?.name}} </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="amount">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.paymentColumnAmount)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.amount}} </mat-cell>
+            </ng-container>
+              <!-- Name Column -->
+              <ng-container matColumnDef="unpaid">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.paymentColumnUnpaid)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.unpaid}} </mat-cell>
+            </ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="user">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.user)}} </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row?.userId?.name}} </mat-cell>
+    </ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="timeStamp">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.timeStamp)}} </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.timeStamp}} </mat-cell>
+    </ng-container>
+            <ng-container matColumnDef="action" >
+                <th class="text-center" mat-header-cell *matHeaderCellDef id="action" >
+                    <div class="blockheader-with-text"> {{translate(labels.mat_action)}}</div>
+                </th>
+                <td class="text-center" mat-cell *matCellDef="let element; let currentIndex= index">
+                    <a  *ngIf="(!paymentSearch.controls['history'].value || paymentSearch.controls['history'].value == 'false') && element.sale == null" [disabled]='true'(click)="loadPaymentToEdit(element._id , currentIndex)" class="m-r-10 cursor-pointer"  [matTooltip]="translate(labels.btnEdit)"><i class="fa fa-pencil" onclick="openAddOverlay()"></i></a>  
+                    <a *ngIf="(!paymentSearch.controls['history'].value || paymentSearch.controls['history'].value  == 'false')&& element.sale == null"(click)="deleteByIdPayment(element._id , currentIndex)" class="m-r-10 cursor-pointer" [matTooltip]="translate(labels.btnDelete)">
+                        <i class="fa fa-trash text-danger"></i>
+                     </a>  
+                </td>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"[ngClass]="{'backgroundColor':sharedService.check(row)}">
+            </mat-row>
+            
+        </mat-table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+    </mat-card-content>
+</mat-card>

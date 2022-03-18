@@ -1,0 +1,115 @@
+/*
+Template Name: Material Pro Admin
+Author: Themedesigner
+Email: niravjoshi87@gmail.com
+File: scss
+*/
+/**
+ * Table Of Content
+ *
+ * 	1. Globals
+ *	2. Headers
+ *	3. Navigations
+ *	4. Banners
+ *	5. Footers
+ *	6. app
+ *	7. Widgets
+ *	8. Custom Templates
+ */
+
+@import 'variable';
+
+
+@import 'icons/themify-icons/themify-icons.css';
+@import 'icons/font-awesome/css/font-awesome.css';
+@import 'spinner';
+@import 'app';
+@import 'header';
+@import 'widgets';
+@import 'pages';
+@import 'sidebar';
+@import 'dark-sidebar';
+@import 'responsive';
+@import 'rtl';
+
+
+// Red Theme
+
+.danger {  
+	@import 'colors/red';
+	@include angular-material-theme($red-app-theme);
+}
+
+// Blue Theme
+
+.blue { 
+	@import 'colors/blue'; 
+  	@include angular-material-theme($blue-app-theme);
+}
+
+// Green Theme
+
+.green {  
+	@import 'colors/green';
+  	@include angular-material-theme($green-app-theme);
+}
+
+// Dark Theme
+
+.dark { 
+	@import 'colors/dark'; 
+  	@include angular-material-theme($dark-theme); 
+}
+  
+
+$custom-typography: mat-typography-config( 
+  $font-family: 'Poppins'
+); 
+@include mat-core($custom-typography);
+.floatright{
+    float: right;
+}
+.m-t-5{
+    margin-top: 7%;
+}
+.m-t-3{
+    margin-top: 4%;
+}
+tr:hover .btnxs-transparent-icondanger {
+    color: #B90000 ;
+  }
+  .overlaydiv {
+    display: none;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    position: absolute;
+    transition: 0.2s ease;
+    width: 100%;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+  .overlay-content{
+      background: white;
+  }
+  buttonStandar{
+    margin-left: 1% !important; 
+    /* height: 38px; */
+    width: 15%;
+  }
+  .red-snackbar {
+    background: #F44336;
+}
+.green-snackbar {
+  background: green;
+}
+.m-l-2{
+  margin-left: 2% !important;
+
+}
+.backgroundColor{
+  background: tomato;
+}

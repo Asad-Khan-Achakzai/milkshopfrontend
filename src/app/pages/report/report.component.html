@@ -1,0 +1,342 @@
+<mat-card>
+    <mat-card-content>
+        <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
+
+            <div class="p-10" fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field>
+                    <mat-label>{{translate(labels.reportColumnMenu)}}
+                    </mat-label>
+                    <mat-select formControlName="menu" (selectionChange)="selectionChanged()"
+                        [errorStateMatcher]="matcher" class="angSelect">
+                        <mat-option *ngFor="let menu of menuList" [value]="menu">
+                            {{menu}} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-hint *ngIf="required('menu')" class="text-danger font-14">
+                    {{translate(labels.validation_required)}}</mat-hint>
+            </div>
+
+            <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100"
+                *ngIf="this.reportForm.controls['menu'].value == 'Date Range' || this.reportForm.controls['menu'].value == 'Date Range And Buyer'">
+                <mat-form-field>
+                    <mat-label>{{translate(labels.reportColumnEnterDateRange)}}</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate formControlName="start" placeholder="Start date"
+                            (dateChange)="onDateChange($event.value, reportForm.get('start'))">
+                        <input matEndDate formControlName="end" placeholder="End date"
+                            (dateChange)="onDateChange($event.value, reportForm.get('end'))">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+
+                    <mat-error *ngIf="reportForm.controls.start.hasError('matStartDateInvalid')">Invalid start date
+                    </mat-error>
+                    <mat-error *ngIf="reportForm.controls.end.hasError('matEndDateInvalid')">Invalid end date
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100"
+                *ngIf="this.reportForm.controls['menu'].value == 'Date' || this.reportForm.controls['menu'].value == 'Date And Buyer'">
+                <mat-form-field>
+                    <mat-label>{{translate(labels.reportColumnEnterDate)}} </mat-label><input matInput [matDatepicker]="date" formControlName="date"
+                        (dateChange)="onDateChange($event.value, reportForm.get('date'))">
+                    <mat-datepicker-toggle matSuffix [for]="date"></mat-datepicker-toggle>
+                    <mat-datepicker #date></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100"
+                *ngIf="this.reportForm.controls['menu'].value == 'Buyer' || this.reportForm.controls['menu'].value == 'Date Range And Buyer'|| this.reportForm.controls['menu'].value == 'Date And Buyer'">
+                <mat-form-field>
+                    <mat-label>{{translate(labels.saleColumnBuyerName)}}
+                    </mat-label>
+                    <mat-select formControlName="buyer" [errorStateMatcher]="matcher" class="angSelect">
+                        <mat-option *ngFor="let buyer of buyerList" [value]="buyer._id">
+                            {{buyer?.name}} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-hint *ngIf="required('buyer')" class="text-danger font-14">
+                    {{translate(labels.validation_required)}}</mat-hint>
+            </div>
+            <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+                <mat-card-actions class="m-l-5">
+                    <button mat-raised-button type="submit" style="float: right;"
+                        [disabled]="reportForm.invalid">Submit</button>
+                </mat-card-actions>
+            </div>
+        </form>
+        <div id="MyDIv">
+            <h3>{{translate(labels.reportColumnDateSale)}}
+                <span><i [matTooltip]="translate(labels.reportColumnPrint)" (click)="exportAsPDF('MyDIv');"
+                        class="fa fa-print floatRight" aria-hidden="true"></i>
+                </span>
+            </h3>
+            <mat-grid-list cols="4" rowHeight="2:1" gutterSize="5px">
+                <mat-grid-tile>
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDateSale)}}:</span>
+
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile><span>{{paid+unpaid}}</span></mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDatePaid)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile><span>{{paid+paidFromPayments}}</span></mat-grid-tile>
+
+
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Date' && this.reportForm.controls['menu'].value !='Date Range'">
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDateUnpaid)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Date' && this.reportForm.controls['menu'].value !='Date Range'"><span>{{unpaid-paidFromPayments}}</span></mat-grid-tile>
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value =='Date' || this.reportForm.controls['menu'].value =='Date Range'">
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDateUnpaidSale)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile  *ngIf="this.reportForm.controls['menu'].value =='Date' || this.reportForm.controls['menu'].value =='Date Range'"><span>{{unpaid}}</span></mat-grid-tile>
+                <!-- <mat-grid-tile  *ngIf="this.reportForm.controls['menu'].value =='Date' || this.reportForm.controls['menu'].value =='Date Range'">
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDatePayments)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile  *ngIf="this.reportForm.controls['menu'].value =='Date' || this.reportForm.controls['menu'].value =='Date Range'"><span>{{paidFromPayments}}</span></mat-grid-tile>-->
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Buyer'&& this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'"> 
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDateOldUnpaid)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Buyer' && this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'"><span>{{oldUnpaidAmount-oldPaidFromPayments}}</span></mat-grid-tile>
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Buyer' && this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'">
+                    <div class="item">
+                        <span class='m-20'>{{translate(labels.reportColumnDateTotalUnpaid)}}:</span>
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile *ngIf="this.reportForm.controls['menu'].value !='Buyer' && this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'"><span>{{totalUnpaid-totalPaidFromPayments}}</span></mat-grid-tile>
+                <!-- <mat-grid-tile>3</mat-grid-tile>
+        <mat-grid-tile>4</mat-grid-tile> -->
+            </mat-grid-list>
+            <!-- <div class="container" id="MyDIv">
+
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateSale)}}:</span>
+                    <span style="margin-left: 33%;">{{paid+unpaid}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDatePaid)}}:</span>
+                    <span style="margin-left: 29%;">{{paid+paidFromPayments}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateUnpaid)}}:</span>
+                    <span style="
+            margin-left: 29%;
+        ">{{unpaid-paidFromPayments}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateOldUnpaid)}}:</span>
+
+                    <span style="margin-left: 36%;">{{oldUnpaidAmount-oldPaidFromPayments}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateTotalUnpaid)}}:</span>
+                    <span style="
+            margin-left: 0.8%;
+        ">{{totalUnpaid-totalPaidFromPayments}}</span>
+                </div>
+
+
+            </div> -->
+            <h3 *ngIf="this.reportForm.controls['menu'].value !='Buyer' && this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'">
+                {{translate(labels.reportColumnDateExpenses)}}</h3>
+        <mat-grid-list cols="4" rowHeight="2:1" gutterSize="5px" *ngIf="this.reportForm.controls['menu'].value !='Buyer' && this.reportForm.controls['menu'].value !='Date And Buyer' && this.reportForm.controls['menu'].value !='Date Range And Buyer'">
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateTodaySaleCash)}}:</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <span >{{paid+paidFromPayments}}</span>
+
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateExpneseAmount)}}:</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <span>{{expensesAmount}}</span>
+
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                <span class='m-20'>{{translate(labels.reportColumnDateTotalRemaining)}}:</span>
+            </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <span >{{(paid+paidFromPayments)-expensesAmount}}</span>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <span *ngIf="this.reportForm.controls['menu'].value =='Date' || this.reportForm.controls['menu'].value =='Date Range'">
+        <h3 >{{translate(labels.reportColumnDateItems)}}</h3>
+        <mat-grid-list cols="5" rowHeight="2:1" gutterSize="5px" >
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateName)}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnPurchase)}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateSale)}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateWaistage)}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateRemaining)}}</span>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list cols="5" rowHeight="2:1" gutterSize="5px" *ngFor="let item of itemsReport" >
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{item?.name}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{item?.pStock}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{item?.sStock}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="item">
+                    <span class='m-20'>{{item?.wStock}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="item.Remainings">
+                <div class="item">
+                    <span class='m-20'>{{item?.Remainings}}</span>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!item.Remainings">
+                <div class="item">
+                    <span class='m-20'>{{item.pStock - (item.wStock + item.sStock)}}</span>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </span>
+            <!-- <div class="container" *ngIf="this.reportForm.controls['menu'].value !='Buyer'">
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateTodaySaleCash)}}:</span>
+                    <span style="margin-left: 14%;">{{paid+paidFromPayments}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateExpneseAmount)}}:</span>
+                    <span style="margin-left: 28%;">{{expensesAmount}}</span>
+                </div>
+                <div class="item">
+                    <span class='m-20'>{{translate(labels.reportColumnDateTotalRemaining)}}:</span>
+                    <span style="
+            margin-left:0.1%;
+        ">{{(paid+paidFromPayments)-expensesAmount}}</span>
+                </div>
+            </div> -->
+        </div>
+        <!-- <div class="p-10">
+            <mat-card-actions class="m-l-5">
+                <button mat-raised-button >Details</button>
+            </mat-card-actions>
+        </div> -->
+        <!-- <div class="responsive-table ">
+        <mat-table [dataSource]="report" matSort  class="angTable" >
+
+           
+
+            
+            <ng-container matColumnDef="buyerName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnBuyerName)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.buyerObj.name}} </mat-cell>
+            </ng-container>
+
+             
+             <ng-container matColumnDef="buyerType">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.HotelColumnYougurtType)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.buyerObj.type}} </mat-cell>
+            </ng-container>
+           
+            <ng-container matColumnDef="Itemname">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.itemColumnName)}} </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.itemObj.Itemname}} </mat-cell>
+            </ng-container>
+   
+    <ng-container matColumnDef="quantity">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnQuantitiy)}} </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.quantity}} </mat-cell>
+    </ng-container>
+       
+        <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnPricePerUnit)}} </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.unitPrice}} </mat-cell>
+        </ng-container>
+         
+          <ng-container matColumnDef="amount">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnAmount)}} </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.amount}} </mat-cell>
+        </ng-container>
+         
+          <ng-container matColumnDef="payment">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.saleColumnPayment)}} </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.payment}} </mat-cell>
+        </ng-container>
+     
+      <ng-container matColumnDef="user">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.user)}} </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row?.userObj?.name}} </mat-cell>
+    </ng-container>
+    
+      <ng-container matColumnDef="timeStamp">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{translate(labels.timeStamp)}} </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.timeStamp}} </mat-cell>
+    </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;">
+            </mat-row>
+            
+        </mat-table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+            {{translate(labels.saleColumnPaidAmount)}} = {{totalAmount}}
+        </div>
+        <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+            {{translate(labels.totalUnpaidAmount)}} = {{totalUnpaidAmount}}
+    
+        </div>
+        <div class="p-10" fxFlex.gt-sm="50" fxFlex.gt-xs="50" fxFlex="100">
+            {{translate(labels.saleColumnAmount)}} = {{totalUnpaidAmount +totalAmount}}
+    
+        </div>
+    
+    </div> -->
+
+    </mat-card-content>
+
+</mat-card>

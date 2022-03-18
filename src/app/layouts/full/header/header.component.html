@@ -1,0 +1,29 @@
+<!-- ============================================================== -->
+<!-- Notification - style you can find in header.scss -->
+<!-- ============================================================== -->
+
+<!-- ============================================================== -->
+<!-- Profile - style you can find in header.scss -->
+<!-- ============================================================== -->
+
+<!-- ============================================================== -->
+<!-- Profile - style you can find in header.scss -->
+<!-- ============================================================== -->
+<button [matMenuTriggerFor]="profile" mat-icon-button class="m-r-5">
+    <img src="assets/images/users/1.jpg" alt="user" class="profile-pic"> </button>
+<mat-menu #profile="matMenu" class="mymegamenu">
+    <button mat-menu-item (click)="signout()">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+     Sign Out </button>
+</mat-menu>
+<button [matMenuTriggerFor]="profile2" mat-icon-button class="m-r-5">
+    <i class="fa fa-language" aria-hidden="true" ></i>
+
+  </button>
+<mat-menu #profile2="matMenu" class="mymegamenu">
+    <button mat-menu-item (click)="changeLanguage('english')">
+        
+    English </button>
+     <button mat-menu-item (click)="changeLanguage('urdu')">
+        اردو </button>
+</mat-menu>
